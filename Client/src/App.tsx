@@ -4,10 +4,7 @@ import { IngestPanel } from "./Components/IngestPanel";
 import { ChatMessage } from "./Components/ChatMessage";
 import { TypingIndicator } from "./Components/TypingIndicator";
 import type { Message, GeminiRAGResponse } from "./utils/Types";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-export const API_BASE = "http://localhost:3000";
+import { API_BASE } from "./utils/config";
 
 export default function AIChatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -49,7 +46,13 @@ export default function AIChatbot() {
       const res = await fetch(`${API_BASE}/api/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: text }),
+        body: JSON.stringify({
+          question: text,
+          history: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
       });
 
       const data: GeminiRAGResponse = await res.json();

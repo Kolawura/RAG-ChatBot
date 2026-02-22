@@ -3,9 +3,9 @@ export interface ChatMessage {
   content: string;
 }
 
-export interface ChatRequestBody {
-  messages: ChatMessage[];
-  system?: string;
+export interface AskRequestBody {
+  question: string;
+  history?: ChatMessage[];
 }
 
 export interface VectorDocument {

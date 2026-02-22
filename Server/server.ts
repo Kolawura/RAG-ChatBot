@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { VectorDocument } from "./Type";
+import { AskRequestBody, VectorDocument } from "./Type";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"] }));
 
 // Ensure the API key exists
 if (!process.env.GEMINI_API_KEY) {
@@ -81,7 +81,7 @@ app.post("/api/ingest", async (req: Request, res: Response): Promise<any> => {
 // ==========================================
 app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
   try {
-    const { question } = req.body as { question: string };
+    const { question, history = [] } = req.body as AskRequestBody;
 
     if (!question) {
       return res.status(400).json({ error: "Question is required" });
@@ -106,6 +106,17 @@ app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
     // Step C: Build the context string
     const context = topResults.map((doc) => doc.text).join("\n\n---\n\n");
 
+    const chatHistory =
+      history.length > 0
+        ? history
+            .slice(-10)
+            .map(
+              (m) =>
+                `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`,
+            )
+            .join("\n")
+        : "No previous conversation.";
+
     // Step D: Construct the prompt
     const prompt = `
     You are an expert assistant with access to a knowledge base. Answer every question as helpfully as possible.
@@ -113,10 +124,14 @@ app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
     KNOWLEDGE BASE CONTEXT:
     ${context || "No relevant context found."}
 
-    QUESTION:
+    CONVERSATION HISTORY:
+    ${chatHistory}
+
+    CURRENT QUESTION:
     ${question}
 
     INSTRUCTIONS:
+    - Use the conversation history to understand follow-up questions
     - If the context contains the answer, respond directly and confidently using it
     - If the context is partially relevant, use what's there and supplement with your general knowledge — clearly separate the two
     - If the context has nothing relevant, answer from your own knowledge but start your response with: "⚠️ This isn't in my knowledge base, but from general knowledge:"

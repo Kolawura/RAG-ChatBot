@@ -1,4 +1,5 @@
 import type { ChatMessageProps } from "../utils/Types";
+import { Message } from "./Message";
 
 export const ChatMessage = ({ message }: ChatMessageProps) => {
   const isUser = message.role === "user";
@@ -50,7 +51,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
             : { background: "rgba(245,243,255,0.8)" }),
         }}
       >
-        {message.content}
+        <Message content={message.content} />
       </div>
     </div>
   );
