@@ -8,7 +8,11 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"] }));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://rag-chat-bot-peach.vercel.app/"],
+  }),
+);
 
 // Ensure the API key exists
 if (!process.env.GEMINI_API_KEY) {
