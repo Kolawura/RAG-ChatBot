@@ -16,25 +16,17 @@ if (!process.env.GEMINI_API_KEY) {
   process.exit(1);
 }
 
-// Initialize Gemini Client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Define Models
-// Updated Model Initializations
 const embeddingModel = genAI.getGenerativeModel({
   model: "gemini-embedding-001",
 });
 const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-// ==========================================
 // 1. TYPES & IN-MEMORY VECTOR STORE
-// ==========================================
-
-// Define the structure of our stored data
 
 let vectorStore: VectorDocument[] = [];
 
-// Helper math function with strongly-typed arrays
 function cosineSimilarity(vecA: number[], vecB: number[]): number {
   let dotProduct = 0;
   let normA = 0;
@@ -47,9 +39,8 @@ function cosineSimilarity(vecA: number[], vecB: number[]): number {
   return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-// ==========================================
 // 2. INGESTION ENDPOINT (Add Data)
-// ==========================================
+
 app.post("/api/ingest", async (req: Request, res: Response): Promise<any> => {
   try {
     const { text } = req.body as { text: string };
@@ -58,11 +49,9 @@ app.post("/api/ingest", async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ error: "Text is required" });
     }
 
-    // Generate embedding
     const result = await embeddingModel.embedContent(text);
     const embedding = result.embedding.values;
 
-    // Store typed document
     const newDocument: VectorDocument = { text, embedding };
     vectorStore.push(newDocument);
 
@@ -76,9 +65,8 @@ app.post("/api/ingest", async (req: Request, res: Response): Promise<any> => {
   }
 });
 
-// ==========================================
 // 3. RETRIEVAL & GENERATION ENDPOINT (RAG)
-// ==========================================
+
 app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
   try {
     const { question, history = [] } = req.body as AskRequestBody;
@@ -87,11 +75,9 @@ app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ error: "Question is required" });
     }
 
-    // Step A: Embed the user's question
     const queryResult = await embeddingModel.embedContent(question);
     const queryEmbedding = queryResult.embedding.values;
 
-    // Step B: Calculate similarity scores
     const rankedResults = vectorStore.map((doc) => {
       return {
         text: doc.text,
@@ -99,11 +85,9 @@ app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
       };
     });
 
-    // Sort by highest score first and take the top 3
     rankedResults.sort((a, b) => b.score - a.score);
     const topResults = rankedResults.slice(0, 3);
 
-    // Step C: Build the context string
     const context = topResults.map((doc) => doc.text).join("\n\n---\n\n");
 
     const chatHistory =
@@ -117,7 +101,6 @@ app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
             .join("\n")
         : "No previous conversation.";
 
-    // Step D: Construct the prompt
     const prompt = `
     You are an expert assistant with access to a knowledge base. Answer every question as helpfully as possible.
 
@@ -143,7 +126,6 @@ app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
     ANSWER:
     `;
 
-    // Step E: Send to Gemini text model
     const response = await chatModel.generateContent(prompt);
     const answer = response.response.text();
 
