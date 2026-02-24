@@ -127,7 +127,7 @@ export default function AIChatbot() {
             RAG Chat
           </span>
           <span className="text-[11px] uppercase tracking-widest text-violet-600/40 ml-1">
-            Gemini 1.5 Flash
+            Gemini 2.5 Flash
           </span>
 
           {/* Toggle ingest panel */}
