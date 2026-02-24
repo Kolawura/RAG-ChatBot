@@ -68,8 +68,8 @@ export default function AIChatbot() {
           ? e.message
           : "Something went wrong. Please try again.";
       setError(msg);
-      setInput(text);
       setMessages((prev) => prev.slice(0, -1));
+      setInput(text);
     } finally {
       setLoading(false);
     }
