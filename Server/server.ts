@@ -143,6 +143,10 @@ app.post("/api/ask", async (req: Request, res: Response): Promise<any> => {
   }
 });
 
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 // Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
