@@ -6,6 +6,8 @@ import { TypingIndicator } from "./Components/TypingIndicator";
 import type { Message, GeminiRAGResponse } from "./utils/Types";
 import { API_BASE } from "./utils/config";
 
+console.log(API_BASE);
+
 export default function AIChatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>("");
@@ -66,6 +68,8 @@ export default function AIChatbot() {
           ? e.message
           : "Something went wrong. Please try again.";
       setError(msg);
+      setInput(text);
+      setMessages((prev) => prev.slice(0, -1));
     } finally {
       setLoading(false);
     }
