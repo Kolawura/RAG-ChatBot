@@ -126,14 +126,14 @@ export default function AIChatbot() {
           >
             RAG Chat
           </span>
-          <span className="text-[11px] uppercase tracking-widest text-violet-600/40 ml-1">
+          <span className="hidden md:flex text-[11px] uppercase tracking-widest text-violet-600/40 ml-1">
             Gemini 2.5 Flash
           </span>
 
           {/* Toggle ingest panel */}
           <button
             onClick={() => setShowIngest((v) => !v)}
-            className="ml-auto text-[11px] uppercase tracking-widest px-3 py-1 rounded-lg border transition-all duration-150"
+            className="ml-auto text-[10px] md:text-[11px] uppercase tracking-widest px-3 py-1 rounded-lg border transition-all duration-150"
             style={{
               fontFamily: "Syne, sans-serif",
               borderColor: showIngest
@@ -166,7 +166,7 @@ export default function AIChatbot() {
               >
                 RAG
               </span>
-              <p className="text-[13px] text-violet-500/80 tracking-[0.05em]">
+              <p className="text-[13px] text-violet-500/80 text-center px-4 tracking-[0.05em]">
                 Add knowledge above, then ask anything
               </p>
             </div>
@@ -202,7 +202,7 @@ export default function AIChatbot() {
 
         {/* ── Input area ── */}
         <div
-          className="relative z-10 px-32 pt-4 pb-6 border-t backdrop-blur-xl"
+          className="relative z-10 px-4 md:px-32 pt-2 md:pt-4 pb-2 md:pb-6 border-t backdrop-blur-xl"
           style={{
             borderColor: "rgba(124,58,237,.15)",
           }}
@@ -213,7 +213,7 @@ export default function AIChatbot() {
             </div>
           )}
 
-          <div className="flex items-center gap-2.5 px-4 py-2.5 pr-3 rounded-[14px] bg-white/4 border border-black/10 transition-all duration-200 focus-within:border-violet-600/50 shadow-lg">
+          <div className="flex items-center gap-2.5 px-4 py-2 pr-3 rounded-[14px] bg-white/4 border border-black/10 transition-all duration-200 focus-within:border-violet-600/50 shadow-lg">
             <textarea
               ref={textareaRef}
               className="chat-textarea flex-1 bg-transparent border-none outline-none resize-none text-gray-900/80 text-sm leading-relaxed tracking-[0.01em] min-h-6 max-h-40"
@@ -221,7 +221,7 @@ export default function AIChatbot() {
               value={input}
               onChange={handleChange}
               onKeyDown={handleKey}
-              placeholder="Ask a question about your knowledge base..."
+              placeholder="Ask a question..."
               rows={1}
               disabled={loading}
             />
@@ -252,8 +252,8 @@ export default function AIChatbot() {
             </button>
           </div>
 
-          <p className="mt-2.5 text-center text-[11px] tracking-[0.05em] text-violet-100/30">
-            Powered by Gemini AI· Press Enter to send
+          <p className="mt-2.5 text-center text-[11px] tracking-[0.05em] text-violet-500/80">
+            Know More About us·
           </p>
         </div>
       </div>
